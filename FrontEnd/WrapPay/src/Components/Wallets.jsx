@@ -3,7 +3,7 @@ import { useState } from 'react';
 import EthWalletConnect from './EthWalletConnect';
 function Wallets() {
     const [selectedWallet, setSelectedWallet] = useState("");
-    const wallets = [{id:"MetaMaskSDK",name:"MetaMask"}, 
+    const wallets = [{id:"MetaMask",name:"MetaMask"}, 
         {id:"com.coinbase.wallet" ,name:"Coinbase Wallet"},
          {id:"com.trustwallet.app",name:"Trust Wallet"},
         {id:"injected", name:"Browser Wallet"}];
@@ -30,8 +30,8 @@ function Wallets() {
       </button> */}
               <EthWalletConnect
                   selectedWallet={selectedWallet}
-                //   amount={amount}
-                //   recipientAddress={recipientAddress}
+                   amount="0.01"
+                recipientAddress="0x10273E2BD2A9D3d8239e619B5503D2FB9019fF0c"
               />
     </div>
     </div>
