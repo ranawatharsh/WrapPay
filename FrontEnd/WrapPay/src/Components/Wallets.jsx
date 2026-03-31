@@ -1,18 +1,40 @@
 import React, { useState } from 'react';
 import EthWalletConnect from './EthWalletConnect';
 import SolWalletConnect from './SolWalletConnect';
+import SwapPreview from './SwapPreview';
 import { walletLogos,allWallets } from '../utils/Walletlogo';
 
-function Wallets({ currency, amount, merchantWallet }) {
+function Wallets({ currency, amount, merchantWallet, sessionId, returnUrl }) {
   const [selectedWallet, setSelectedWallet] = useState('');
   const [selectedChain, setSelectedChain] = useState('');
+  const [showSwapPreview, setShowSwapPreview] = useState(false);
+  const [userBalance, setUserBalance] = useState('1.5'); // Get from wallet
 
   const handleWalletSelect = (wallet) => {
     setSelectedWallet(wallet.id);
     setSelectedChain(wallet.chain);
+    
+    // Check if swap is needed
+    if (wallet.chain !== currency) {
+      setShowSwapPreview(true);
+    } else {
+      setShowSwapPreview(false);
+    }
   };
 
-  // Check if selected wallet matches required currency
+  const handleSwapConfirm = (swapDetails) => {
+    // User confirmed swap
+    console.log('Swap confirmed:', swapDetails);
+    // Proceed with swap + payment
+    setShowSwapPreview(false);
+  };
+
+  const handleSwapCancel = () => {
+    setShowSwapPreview(false);
+    setSelectedWallet('');
+    setSelectedChain('');
+  };
+
   const isWalletMismatch = selectedChain && selectedChain !== currency;
 
   return (
@@ -22,26 +44,14 @@ function Wallets({ currency, amount, merchantWallet }) {
       {/* Multi-wallet Info */}
       <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg">
         <p className="text-sm font-semibold text-gray-800 mb-1">
-          💳 Multi-Wallet Support
+          🔄 Swap & Pay Available
         </p>
         <p className="text-xs text-gray-600">
-          Choose any wallet from Ethereum or Solana networks
+          Don't have {currency}? Pay with any token - we'll swap it automatically!
         </p>
       </div>
 
-      {/* Mismatch Warning (if different chain selected) */}
-      {isWalletMismatch && (
-        <div className="mb-4 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
-          <p className="text-sm font-semibold text-yellow-900 mb-1">
-            🔄 Different network selected
-          </p>
-          <p className="text-xs text-yellow-800">
-            Payment requires <strong>{currency}</strong>, but you selected <strong>{selectedChain}</strong> wallet. Swap feature coming soon to enable cross-chain payments!
-          </p>
-        </div>
-      )}
-
-      {/* ALL Wallets List */}
+      {/* Wallet List */}
       <div className="space-y-3 mb-6">
         {allWallets.map((wallet) => (
           <label
@@ -85,24 +95,29 @@ function Wallets({ currency, amount, merchantWallet }) {
             }`}>
               {wallet.chain}
             </span>
+
+            {/* Swap Badge */}
+            {wallet.chain !== currency && (
+              <span className="text-xs bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 px-2 py-1 rounded-full font-semibold">
+                Auto Swap
+              </span>
+            )}
           </label>
         ))}
       </div>
 
-      {/* Payment Component - Show only if chain matches OR allow anyway (for future swap) */}
+      {/* Show Swap Preview or Payment Component */}
       {selectedWallet && (
         <div className="border-t border-gray-200 pt-6 mt-6">
-          {/* If mismatch, show coming soon message */}
-          {isWalletMismatch ? (
-            <div className="text-center py-8">
-              <div className="mb-4 text-6xl">🔄</div>
-              <p className="text-lg font-semibold text-gray-800 mb-2">
-                Swap & Pay Coming Soon!
-              </p>
-              <p className="text-sm text-gray-600">
-                You'll be able to pay with any token from any chain. We'll handle the swap automatically!
-              </p>
-            </div>
+          {showSwapPreview && isWalletMismatch ? (
+            <SwapPreview
+              userWalletChain={selectedChain}
+              requiredCurrency={currency}
+              requiredAmount={amount}
+              userBalance={userBalance}
+              onConfirm={handleSwapConfirm}
+              onCancel={handleSwapCancel}
+            />
           ) : (
             <>
               {selectedChain === 'ETH' && (
@@ -110,6 +125,8 @@ function Wallets({ currency, amount, merchantWallet }) {
                   selectedWallet={selectedWallet}
                   amount={amount}
                   recipientAddress={merchantWallet}
+                  sessionId={sessionId}
+                  returnUrl={returnUrl}
                 />
               )}
 
@@ -118,6 +135,8 @@ function Wallets({ currency, amount, merchantWallet }) {
                   selectedWallet={selectedWallet}
                   amount={amount}
                   recipientAddress={merchantWallet}
+                  sessionId={sessionId}
+                  returnUrl={returnUrl}
                 />
               )}
             </>

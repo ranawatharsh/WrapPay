@@ -4,9 +4,10 @@ export const walletLogos = {
   coinbase: "https://brandlogo.org/wp-content/uploads/2024/04/Coinbase-Wallet-Logo-300x300.png",
   walletconnect: "https://images.prismic.io/wallet-connect/65779a69531ac2845a25ec6c_WalletConnect-App-Logo-1024X1024.png?auto=format%2Ccompress&fit=max&w=2048",
   phantom: "https://play-lh.googleusercontent.com/305M_FPkDCWQFc_5ABf3XG9zgZ1ESzRIQf-hfKf0SAY3VRh1Rqa6TNkhBEWtOD8ggHk",
-  solflare: "https://solflare.com/assets/logo.svg",
+  solflare: "https://www.solflare.com/wp-content/uploads/2024/11/App-Icon.svg",
   backpack: "https://play-lh.googleusercontent.com/EhgMPJGUYrA7-8PNfOdZgVGzxrOw4toX8tQXv-YzIvN6sAMYFunQ55MVo2SS_hLiNm8"
 };
+
 
 export const allWallets = [
   { id: "metamask", name: "MetaMask", chain: "ETH", color: "blue" },

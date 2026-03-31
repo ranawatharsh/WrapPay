@@ -37,7 +37,7 @@ function App() {
     currency: "ETH",
     merchantName: "CoolNFT Shop",
     merchantWallets: {
-      ETH: "0xYourEthAddress",
+      ETH: "0x10273E2BD2A9D3d8239e619B5503D2FB9019fF0c",
       SOL: "YourSolanaAddress"
     }
   };
