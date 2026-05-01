@@ -9,12 +9,12 @@ import Loader from './Loader';
 import GasEstimate from './GasEstimate';
 import { useGasEstimate } from '../Hooks/useGasEstimate';
 
-function EthWalletConnect({ selectedWallet, amount, recipientAddress }) {
+function EthWalletConnect({ selectedWallet, amount, recipientAddress,sessionId }) {
   const navigate = useNavigate();
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const { address, isConnected } = useAccount();
-  
+  const API_URL = process.env.REACT_APP_API_BASE_URL;
   const [paymentStatus, setPaymentStatus] = useState('idle');
   const [errorMessage, setErrorMessage] = useState('');
   
@@ -29,20 +29,45 @@ function EthWalletConnect({ selectedWallet, amount, recipientAddress }) {
     amount,
     isConnected
   );
+  const verifyPaymentAsync = async ({ sessionId, txHash, walletAddress }) => {
+  try {
+    await fetch(`${API_URL}/payments/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        session_id:sessionId,
+        tx_hash:txHash,
+        // chain: 'ethereum',
+        // walletAddress,
+        // status: 'submitted'
+      }),
+    });
+  } catch (err) {
+    console.error('Verify failed:', err);
+  }
+};
 
   // Redirect on success
   useEffect(() => {
-    if (isConfirmed && hash) {
-      navigate('/payment-success', {
-        state: {
-          transactionHash: hash,
-          amount: amount,
-          merchant: recipientAddress,
-          chain:'ETH'
-        }
-      });
-    }
-  }, [isConfirmed, hash, navigate, amount, recipientAddress]);
+  if (isConfirmed && hash) {
+    // send to backend
+    
+
+    navigate('/payment-success', {
+      state: {
+        transactionHash: hash,
+        amount: amount,
+        merchant: recipientAddress,
+        chain: 'ETH'
+      }
+    });
+    verifyPaymentAsync({
+      sessionId,
+      txHash: hash,
+      walletAddress: address,
+    });
+  }
+}, [isConfirmed, hash, navigate, amount, recipientAddress, sessionId, address]);
 
   // Redirect on error
   useEffect(() => {

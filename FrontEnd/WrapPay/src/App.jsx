@@ -126,7 +126,7 @@ function App() {
                     path="/"
                     element={
                       <Navigate
-                        to="/payment/86df3d7f-4087-44f5-a551-8e5367ff5283"
+                        to={`/payment/${sessionid}`}
                         replace
                       />
                     }

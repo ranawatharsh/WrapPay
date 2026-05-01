@@ -5,15 +5,31 @@ import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import Loader from './Loader';
 
-function SolWalletConnect({ selectedWallet, amount, recipientAddress }) {
+function SolWalletConnect({ selectedWallet, amount, recipientAddress,sessionId }) {
   const navigate = useNavigate();
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-
+  const API_URL = process.env.REACT_APP_API_BASE_URL;
   const isConnected = !!publicKey;
-
+const verifyPaymentAsync = async ({ sessionId, txHash, walletAddress }) => {
+  try {
+    await fetch(`${API_URL}/payments/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId,
+        txHash,
+        chain: 'solana',
+        walletAddress,
+        status: 'submitted'
+      }),
+    });
+  } catch (err) {
+    console.error('Verify failed:', err);
+  }
+};
   const handlePayment = async () => {
     if (!publicKey) {
       alert('Please connect wallet first');
@@ -37,7 +53,12 @@ function SolWalletConnect({ selectedWallet, amount, recipientAddress }) {
 
       const signature = await sendTransaction(transaction, connection);
       await connection.confirmTransaction(signature, 'confirmed');
-      
+      verifyPaymentAsync({
+        sessionId,
+        txHash: signature,
+        walletAddress: publicKey.toString(),
+      });
+
       navigate('/payment-success', {
         state: {
           transactionHash: signature,
