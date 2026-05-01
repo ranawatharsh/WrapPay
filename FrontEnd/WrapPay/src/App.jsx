@@ -124,12 +124,7 @@ function App() {
                 <Routes>
                   <Route
                     path="/"
-                    element={
-                      <Navigate
-                        to={`/payment/${sessionid}`}
-                        replace
-                      />
-                    }
+                    element={<div>WrapPay Checkout - Invalid or missing session</div>}
                   />
                   <Route path="/payment/:sessionId" element={<PaymentPage />} />
                   <Route path="/payment-success" element={<PaymentSuccess />} />
