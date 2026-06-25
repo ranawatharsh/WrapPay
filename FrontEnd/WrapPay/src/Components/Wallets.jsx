@@ -9,6 +9,7 @@ function Wallets({ currency, amount, merchantWallet, sessionId, returnUrl }) {
   const [selectedChain, setSelectedChain] = useState('');
   const [showSwapPreview, setShowSwapPreview] = useState(false);
   const [userBalance, setUserBalance] = useState('1.5'); // Get from wallet
+  const [confirmedSwapDetails, setConfirmedSwapDetails] = useState(null);
 
   const handleWalletSelect = (wallet) => {
     setSelectedWallet(wallet.id);
@@ -25,7 +26,7 @@ function Wallets({ currency, amount, merchantWallet, sessionId, returnUrl }) {
   const handleSwapConfirm = (swapDetails) => {
     // User confirmed swap
     console.log('Swap confirmed:', swapDetails);
-    // Proceed with swap + payment
+    setConfirmedSwapDetails(swapDetails);
     setShowSwapPreview(false);
   };
 
@@ -33,6 +34,7 @@ function Wallets({ currency, amount, merchantWallet, sessionId, returnUrl }) {
     setShowSwapPreview(false);
     setSelectedWallet('');
     setSelectedChain('');
+    setConfirmedSwapDetails(null);
   };
 
   const isWalletMismatch = selectedChain && selectedChain !== currency;
@@ -127,6 +129,7 @@ function Wallets({ currency, amount, merchantWallet, sessionId, returnUrl }) {
                   recipientAddress={merchantWallet}
                   sessionId={sessionId}
                   returnUrl={returnUrl}
+                  swapDetails={confirmedSwapDetails}
                 />
               )}
 
@@ -137,6 +140,7 @@ function Wallets({ currency, amount, merchantWallet, sessionId, returnUrl }) {
                   recipientAddress={merchantWallet}
                   sessionId={sessionId}
                   returnUrl={returnUrl}
+                  swapDetails={confirmedSwapDetails}
                 />
               )}
             </>
